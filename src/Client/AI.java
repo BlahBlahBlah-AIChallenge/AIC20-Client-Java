@@ -13,8 +13,6 @@ import java.util.Map;
  */
 
 public class AI {
-    private int rows;
-    private int cols;
     private Random random = new Random();
     private Path pathForMyUnits;
 
@@ -23,8 +21,6 @@ public class AI {
 
         // preprocess
         Client.Model.Map map = world.getMap();
-        rows = map.getRowNum();
-        cols = map.getColNum();
 
         List<BaseUnit> allBaseUnits = world.getAllBaseUnits();
         List<BaseUnit> myDeck = new ArrayList<>();
