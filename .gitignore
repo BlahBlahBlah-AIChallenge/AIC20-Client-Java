@@ -31,6 +31,6 @@ hs_err_pid*
 .idea
 
 # Symlinc Dirs
-common
-dto
-Model
+#common
+#dto
+#Model
