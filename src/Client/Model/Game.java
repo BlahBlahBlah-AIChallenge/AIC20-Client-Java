@@ -70,7 +70,7 @@ public class Game implements World {
     }
 
     @Override
-    public void chooseDeckById(List<Integer> typeIds) {
+    public void chooseHandById(List<Integer> typeIds) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("units", Json.GSON.toJsonTree(typeIds));
         Message message = new Message("pick", jsonObject, this.getCurrentTurn());
@@ -78,11 +78,11 @@ public class Game implements World {
     }
 
     @Override
-    public void chooseDeck(List<BaseUnit> baseUnits) {
+    public void chooseHand(List<BaseUnit> baseUnits) {
         List<Integer> typeIds = new ArrayList<>();
         for (BaseUnit baseUnit : baseUnits)
             typeIds.add(baseUnit.getTypeId());
-        chooseDeckById(typeIds);
+        chooseHandById(typeIds);
     }
 
     @Override
@@ -781,9 +781,17 @@ public class Game implements World {
             for (int j = 0; j < initMessage.getMap().getColNum(); j++) {
                 Cell cell = initMessage.getMap().getCells()[i][j];
                 shortestPaths[i][j] = calcShortestPathToCell(player.getPlayerId(), cell);
+                setOrderOfCellsOfShortestPath(shortestPaths, player, i, j);
             }
         }
         player.setShortestPathsToCells(shortestPaths);
+    }
+
+    private void setOrderOfCellsOfShortestPath(Path[][] shortestPaths, Player player, int i, int j) {
+        if(shortestPaths[i][j] == null) return;
+        shortestPaths[i][j] = new Path(shortestPaths[i][j]);
+        if(shortestPaths[i][j].getCells().indexOf(player.getKing().getCenter()) != 0)
+            Collections.reverse(shortestPaths[i][j].getCells());
     }
 
     private void setShortestPathsOfPlayers() {
@@ -810,7 +818,7 @@ public class Game implements World {
         for (Path path : initMessage.getMap().getPaths()) {
             if (path.getCells().indexOf(playerKingCell) == 0 || path.getCells().indexOf(playerKingCell) == path.getCells().size() - 1) {
                 if (!path.getCells().contains(friendKingCell)){
-                    Path newPath = path.copy();
+                    Path newPath = new Path(path);
                     if(newPath.getCells().indexOf(playerKingCell) != 0)
                         Collections.reverse(newPath.getCells());
                     paths.add(newPath);
@@ -833,7 +841,7 @@ public class Game implements World {
             List<Cell> pathCells = path.getCells();
             if (pathCells.indexOf(playerKingCell) == 0 || pathCells.lastIndexOf(playerKingCell) == pathCells.size() - 1)
                 if (pathCells.indexOf(friendKingCell) == 0 || pathCells.lastIndexOf(friendKingCell) == pathCells.size() - 1) {
-                    Path newPath = path.copy();
+                    Path newPath = new Path(path);
                     if(newPath.getCells().indexOf(playerKingCell) != 0)
                         Collections.reverse(newPath.getCells());
                     player.setPathToFriend(newPath);
