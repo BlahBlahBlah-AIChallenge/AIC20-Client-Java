@@ -29,3 +29,8 @@ hs_err_pid*
 
 # Jetbrains
 .idea
+
+# Symlinc Dirs
+common
+dto
+Model
