@@ -19,23 +19,15 @@ public class AI {
     public void pick(World world) {
         System.out.println("pick started");
 
-        // preprocess
-        Client.Model.Map map = world.getMap();
-
-        List<BaseUnit> allBaseUnits = world.getAllBaseUnits();
-        List<BaseUnit> myDeck = new ArrayList<>();
-
-        // choosing all flying units
-        for (BaseUnit baseUnit : allBaseUnits) {
-            if (baseUnit.isFlying())
-                myDeck.add(baseUnit);
-        }
+        List<BaseUnit> myHand = new ArrayList<>();
+        myHand.add(world.getBaseUnitById(0));
+        myHand.add(world.getBaseUnitById(1));
+        myHand.add(world.getBaseUnitById(2));
+        myHand.add(world.getBaseUnitById(6));
+        myHand.add(world.getBaseUnitById(7));
 
         // picking the chosen hand - rest of the hand will automatically be filled with random baseUnits
-        world.chooseHand(myDeck);
-
-        //other preprocess
-        pathForMyUnits = world.getFriend().getPathsFromPlayer().get(0);
+        world.chooseHand(myHand);
     }
 
     public void turn(World world) {
