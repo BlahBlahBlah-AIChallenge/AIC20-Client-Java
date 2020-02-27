@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class AI {
     private Random random = new Random();
-    private Path pathForMyUnits;
+    private World world, lastWorld;
 
     public void pick(World world) {
         System.out.println("pick started");
@@ -30,58 +30,49 @@ public class AI {
         world.chooseHand(myHand);
     }
 
-    public void turn(World world) {
-        System.out.println("turn started: " + world.getCurrentTurn());
+    private Player me, friend, en1, en2;
+    private Map<Integer, List<Integer>> enemyUnitsPaths = new HashMap<>();
 
-        Player myself = world.getMe();
-        int maxAp = world.getGameConstants().getMaxAP();
-
-        // play all of hand once your ap reaches maximum. if ap runs out, putUnit doesn't do anything
-        if (myself.getAp() == maxAp) {
-            for (BaseUnit baseUnit : myself.getHand())
-                world.putUnit(baseUnit, pathForMyUnits);
-        }
-
-        // this code tries to cast the received spell
-        Spell receivedSpell = world.getReceivedSpell();
-        if (receivedSpell != null) {
-            if (receivedSpell.isAreaSpell()) {
-                switch (receivedSpell.getTarget()) {
-                    case ENEMY:
-                        List<Unit> enemyUnits = world.getFirstEnemy().getUnits();
-                        if (!enemyUnits.isEmpty())
-                            world.castAreaSpell(enemyUnits.get(0).getCell(), receivedSpell);
-                        break;
-                    case ALLIED:
-                        List<Unit> friendUnits = world.getFriend().getUnits();
-                        if (!friendUnits.isEmpty())
-                            world.castAreaSpell(friendUnits.get(0).getCell(), receivedSpell);
-                        break;
-                    case SELF:
-                        List<Unit> myUnits = myself.getUnits();
-                        if (!myUnits.isEmpty())
-                            world.castAreaSpell(myUnits.get(0).getCell(), receivedSpell);
+    private void findEnemyUnitsPaths(Player first, Player second){
+        for(var unit : first.getUnits()){
+            if(unit.getHp() > 1){
+                List<Integer> PathIds = new ArrayList<>();
+                if(enemyUnitsPaths.containsKey(unit.getUnitId())){
+                    for(var path : world.getPathsCrossingCell(unit.getCell())){
+                        if(enemyUnitsPaths.get(unit.getUnitId()).contains(path.getId())){
+                            PathIds.add(path.getId());
+                        }
+                    }
+                    if(PathIds.size() > 0){
+                        enemyUnitsPaths.replace(unit.getUnitId(), PathIds);
+                    }
                 }
-            } else {
-                List<Unit> myUnits = myself.getUnits();
-                if (!myUnits.isEmpty()) {
-                    Unit unit = myUnits.get(0);
-                    List<Path> myPaths = myself.getPathsFromPlayer();
-                    Path path = myPaths.get(random.nextInt(myPaths.size()));
-                    int size = path.getCells().size();
-                    Cell cell = path.getCells().get((size + 1) / 2);
-
-                    world.castUnitSpell(unit, path, cell, receivedSpell);
+                else{
+                    for(var path : world.getPathsCrossingCell(unit.getCell())){
+                        PathIds.add(path.getId());
+                    }
+                    if(PathIds.size() == 0){
+                        for(var path : second.getPathsFromPlayer()){
+                            PathIds.add(path.getId());
+                        }
+                    }
+                    enemyUnitsPaths.put(unit.getUnitId(), PathIds);
                 }
             }
         }
+    }
 
-        // this code tries to upgrade damage of first unit. in case there's no damage token, it tries to upgrade range
-        if (myself.getUnits().size() != 0) {
-            Unit unit = myself.getUnits().get(0);
-            world.upgradeUnitDamage(unit);
-            world.upgradeUnitRange(unit);
-        }
+    public void turn(World world) {
+        this.world = world;
+
+        me = world.getMe();
+        friend = world.getFriend();
+        en1 = world.getFirstEnemy();
+        en2 = world.getSecondEnemy();
+        findEnemyUnitsPaths(en1, en2);
+        findEnemyUnitsPaths(en2, en1);
+
+        lastWorld = world;
     }
 
     public void end(World world, Map<Integer, Integer> scores) {
