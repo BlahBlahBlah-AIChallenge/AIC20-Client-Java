@@ -1,5 +1,5 @@
 package Client;
-ride shod ?
+
 import Client.Model.*;
 
 import java.util.*;
