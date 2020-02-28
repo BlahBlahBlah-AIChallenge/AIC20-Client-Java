@@ -123,6 +123,11 @@ public class AI {
 
     public void parse(){
 
+        clacWeights();
+    }
+
+    public void clacWeights(){
+
     }
 
     public void attack(){
