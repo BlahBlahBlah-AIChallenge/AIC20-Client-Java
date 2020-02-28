@@ -130,6 +130,10 @@ public class AI {
 
     }
 
+    public void isCrisis(){
+
+    }
+
     public void attack(){
 
     }
