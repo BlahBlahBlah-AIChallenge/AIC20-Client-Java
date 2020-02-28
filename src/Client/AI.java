@@ -121,6 +121,10 @@ public class AI {
         lastWorld = world;
     }
 
+    public void parse(){
+
+    }
+
     public void end(World world, Map<Integer, Integer> scores) {
         System.out.println("end started");
         System.out.println("My score: " + scores.get(world.getMe().getPlayerId()));
