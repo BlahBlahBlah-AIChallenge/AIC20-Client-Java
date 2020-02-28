@@ -2,6 +2,7 @@ package Client;
 
 import Client.Model.*;
 
+import javax.swing.plaf.basic.BasicGraphicsUtils;
 import java.util.*;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 public class AI {
     private Random random = new Random();
     private World world, lastWorld;
+    private Path selectedPath;
 
     public void pick(World world) {
         System.out.println("pick started");
@@ -28,9 +30,18 @@ public class AI {
 
         // picking the chosen hand - rest of the hand will automatically be filled with random baseUnits
         world.chooseHand(myHand);
+
+        selectedPath = world.getMe().getPathsFromPlayer().get(0);
+        for(var path : world.getMe().getPathsFromPlayer()){
+            if(path.getCells().size() < selectedPath.getCells().size()){
+                selectedPath = path;
+            }
+        }
+
     }
 
     private Player me, friend, en1, en2;
+    private Client.Model.Map map;
 
     private List<Integer> myPaths = new ArrayList<>(), friendPaths = new ArrayList<>();
     private Map<Integer, List<Integer>> enemyUnitsPaths = new HashMap<>();
@@ -95,6 +106,7 @@ public class AI {
         friend = world.getFriend();
         en1 = world.getFirstEnemy();
         en2 = world.getSecondEnemy();
+        map = world.getMap();
         for(var path : me.getPathsFromPlayer()){
             myPaths.add(path.getId());
         }
