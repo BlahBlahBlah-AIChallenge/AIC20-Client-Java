@@ -134,6 +134,10 @@ public class AI {
 
     }
 
+    public void defence(){
+
+    }
+
     public void doSpell(){
 
     }
