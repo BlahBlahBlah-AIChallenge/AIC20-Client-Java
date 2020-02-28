@@ -31,34 +31,58 @@ public class AI {
     }
 
     private Player me, friend, en1, en2;
+
+    private List<Integer> myPaths = new ArrayList<>(), friendPaths = new ArrayList<>();
     private Map<Integer, List<Integer>> enemyUnitsPaths = new HashMap<>();
+    private Map<Integer, Set<Integer>> enemyUnitsTargetKing = new HashMap<>();
 
     private void findEnemyUnitsPaths(Player first, Player second){
         for(var unit : first.getUnits()){
             if(unit.getHp() > 1){
                 List<Integer> PathIds = new ArrayList<>();
+                Set<Integer> TargetKingIds = new HashSet<>();
                 if(enemyUnitsPaths.containsKey(unit.getUnitId())){
                     for(var path : world.getPathsCrossingCell(unit.getCell())){
                         if(enemyUnitsPaths.get(unit.getUnitId()).contains(path.getId())){
                             PathIds.add(path.getId());
+                            if(myPaths.contains(path.getId())){
+                                TargetKingIds.add(me.getPlayerId());
+                            }
+                            if(friendPaths.contains(path.getId())){
+                                TargetKingIds.add(friend.getPlayerId());
+                            }
                         }
                     }
                     if(PathIds.size() > 0){
                         enemyUnitsPaths.replace(unit.getUnitId(), PathIds);
+                        enemyUnitsTargetKing.replace(unit.getUnitId(), TargetKingIds);
                     }
                 }
                 else{
                     for(var path : world.getPathsCrossingCell(unit.getCell())){
                         if(path.getId() != first.getPathToFriend().getId()) {
                             PathIds.add(path.getId());
+                            if(myPaths.contains(path.getId())){
+                                TargetKingIds.add(me.getPlayerId());
+                            }
+                            if(friendPaths.contains(path.getId())){
+                                TargetKingIds.add(friend.getPlayerId());
+                            }
                         }
                     }
                     if(PathIds.size() == 0){
                         for(var path : second.getPathsFromPlayer()){
                             PathIds.add(path.getId());
+                            if(myPaths.contains(path.getId())){
+                                TargetKingIds.add(me.getPlayerId());
+                            }
+                            if(friendPaths.contains(path.getId())){
+                                TargetKingIds.add(friend.getPlayerId());
+                            }
                         }
                     }
                     enemyUnitsPaths.put(unit.getUnitId(), PathIds);
+                    enemyUnitsTargetKing.put(unit.getUnitId(), TargetKingIds);
                 }
             }
         }
@@ -71,6 +95,12 @@ public class AI {
         friend = world.getFriend();
         en1 = world.getFirstEnemy();
         en2 = world.getSecondEnemy();
+        for(var path : me.getPathsFromPlayer()){
+            myPaths.add(path.getId());
+        }
+        for(var path : friend.getPathsFromPlayer()){
+            friendPaths.add(path.getId());
+        }
         findEnemyUnitsPaths(en1, en2);
         findEnemyUnitsPaths(en2, en1);
 
