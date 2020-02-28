@@ -5,6 +5,8 @@ import Client.Model.*;
 import java.util.*;
 import java.util.Map;
 
+// shab be kheir
+
 /**
  * You must put your code in this class {@link AI}.
  * This class has {@link #pick}, to choose units before the start of the game;
