@@ -47,6 +47,8 @@ public class AI {
     private Map<Integer, List<Integer>> enemyUnitsPaths = new HashMap<>();
     private Map<Integer, Set<Integer>> enemyUnitsTargetKing = new HashMap<>();
 
+    private int[] unitWeight = new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1};
+
     private void findEnemyUnitsPaths(Player first, Player second){
         for(var unit : first.getUnits()){
             if(unit.getHp() > 1){
