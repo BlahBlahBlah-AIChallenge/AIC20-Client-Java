@@ -49,7 +49,9 @@ public class AI {
                 }
                 else{
                     for(var path : world.getPathsCrossingCell(unit.getCell())){
-                        PathIds.add(path.getId());
+                        if(path.getId() != first.getPathToFriend().getId()) {
+                            PathIds.add(path.getId());
+                        }
                     }
                     if(PathIds.size() == 0){
                         for(var path : second.getPathsFromPlayer()){
