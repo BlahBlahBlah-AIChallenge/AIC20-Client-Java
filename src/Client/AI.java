@@ -133,7 +133,7 @@ public class AI {
 
     }
 
-    public void isCrisis(){
+    public Boolean isCrisis(){
 
     }
 
