@@ -21,6 +21,8 @@ public class AI {
     public void pick(World world) {
         System.out.println("pick started");
 
+        this.world = world;
+
         List<BaseUnit> myHand = new ArrayList<>();
         myHand.add(world.getBaseUnitById(0));
         myHand.add(world.getBaseUnitById(1));
@@ -31,23 +33,45 @@ public class AI {
         // picking the chosen hand - rest of the hand will automatically be filled with random baseUnits
         world.chooseHand(myHand);
 
+        preProcess();
+    }
+
+    private void preProcess(){
         selectedPath = world.getMe().getPathsFromPlayer().get(0);
         for(var path : world.getMe().getPathsFromPlayer()){
             if(path.getCells().size() < selectedPath.getCells().size()){
                 selectedPath = path;
             }
         }
-
+        for(var unit1 : world.getAllBaseUnits()){
+            for(var unit2 : world.getAllBaseUnits()){
+                if(unit1.getTargetType() == UnitTarget.BOTH){
+                    unitsTargetedBy[unit1.getTypeId()].add(unit2.getTypeId());
+                    unitsTargeting[unit2.getTypeId()].add(unit1.getTypeId());
+                }
+                if(unit1.getTargetType() == UnitTarget.GROUND && !unit1.isFlying()){
+                    unitsTargetedBy[unit1.getTypeId()].add(unit2.getTypeId());
+                    unitsTargeting[unit2.getTypeId()].add(unit1.getTypeId());
+                }
+                if(unit1.getTargetType() == UnitTarget.AIR && unit1.isFlying()){
+                    unitsTargetedBy[unit1.getTypeId()].add(unit2.getTypeId());
+                    unitsTargeting[unit2.getTypeId()].add(unit1.getTypeId());
+                }
+            }
+        }
     }
 
     private Player me, friend, en1, en2;
     private Client.Model.Map map;
 
+    private List<Integer>[] unitsTargetedBy = new List[]{new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()};
+    private List<Integer>[] unitsTargeting = new List[]{new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()};
+
     private List<Integer> myPaths = new ArrayList<>(), friendPaths = new ArrayList<>();
     private Map<Integer, List<Integer>> enemyUnitsPaths = new HashMap<>();
     private Map<Integer, Set<Integer>> enemyUnitsTargetKing = new HashMap<>();
 
-    private int[] unitWeight = new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1};
+    private List<Integer> weightedUnits = new ArrayList<>();
 
     private void findEnemyUnitsPaths(Player first, Player second){
         for(var unit : first.getUnits()){
