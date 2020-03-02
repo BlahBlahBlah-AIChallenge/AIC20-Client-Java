@@ -231,7 +231,20 @@ public class AI {
     }
 
     public void calcDefenceWeights(){
+        weightedUnits.clear();
+        double[] weight = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+        for(Unit enemyUnit : enemyAliveUnits){
+            List<Integer> paths = new ArrayList<Integer>();
+            paths = enemyUnitsPaths.get(enemyUnit.getUnitId());
+
+        }
+
+        for(int i = 0; i < 10; i++){
+            for(int c = 0; c < weight[i]; c++){
+                weightedUnits.add(i);
+            }
+        }
     }
 
     public Boolean isCrisis(){
