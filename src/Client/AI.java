@@ -246,7 +246,9 @@ public class AI {
             }
         }
     }
-
+    private Boolean isCrisisUnit(Unit unit){
+        return false;
+    }
     public Boolean isCrisis(){
         boolean isKingUnderAttack = false;
         int x = 0;
