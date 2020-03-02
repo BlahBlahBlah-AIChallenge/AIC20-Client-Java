@@ -126,6 +126,19 @@ public class AI {
         }
     }
 
+    private Path getEnemyPath(int id){
+        for(Path path : en1.getPathsFromPlayer()){
+            if(path.getId() == id){
+                return path;
+            }
+        }
+        for(Path path : en2.getPathsFromPlayer()){
+            if(path.getId() == id){
+                return path;
+            }
+        }
+    }
+
     private double unitTargetingMeProbability(Unit unit){
         double n = enemyUnitsPaths.get(unit.getUnitId()).size(), i = 0;
         for(int pathId : enemyUnitsPaths.get(unit.getUnitId())){
