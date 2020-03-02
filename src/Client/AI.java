@@ -230,18 +230,51 @@ public class AI {
         }
     }
 
-    public void calcDefenceWeights(){
+    public void calcDefenceWeights() {
+        boolean isKingUnderAttack = false;
         weightedUnits.clear();
         double[] weight = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        boolean isAllZero = true;
 
-        for(Unit enemyUnit : enemyAliveUnits){
-            List<Integer> paths = new ArrayList<Integer>();
-            paths = enemyUnitsPaths.get(enemyUnit.getUnitId());
-
+        for (Unit enemyUnit : enemyAliveUnits) {
+            if(me.getKing().getDistance(enemyUnit) <= enemyUnit.getRange())
+                isKingUnderAttack = true;
         }
 
-        for(int i = 0; i < 10; i++){
-            for(int c = 0; c < weight[i]; c++){
+        if(!isKingUnderAttack){
+            for (BaseUnit unit : Hand) {
+                if(AP >= unit.getAp()) {
+                    weight[unit.getTypeId()] = 1;
+                }
+            }
+            for (Unit enemyUnit : enemyAliveUnits) {
+                if (!isCrisisUnit(enemyUnit))
+                    continue;
+                int minDis = me.getKing().getDistance(enemyUnit);
+                int rng = enemyUnit.getRange();
+                int dis = me.getKing().getCenter().getDistance(enemyUnit.getCell());
+                int time = minDis - rng;
+                for (BaseUnit unit : Hand) {
+                    if (dis - 2 * time > unit.getBaseRange())
+                        weight[unit.getTypeId()] = 0;
+                }
+            }
+            for(int i = 0; i < 10; i++) {
+                if (weight[i] != 0) {
+                    isAllZero = false;
+                    break;
+                }
+            }
+        }
+        if(isKingUnderAttack || isAllZero) {
+            for (BaseUnit unit : Hand) {
+                if(AP >= unit.getAp()){
+                    weight[unit.getTypeId()] = 2 * unit.getBaseRange() + unit.getBaseAttack();
+                }
+            }
+        }
+        for (int i = 0; i < 10; i++) {
+            for (int c = 0; c < weight[i]; c++) {
                 weightedUnits.add(i);
             }
         }
