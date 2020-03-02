@@ -173,12 +173,8 @@ public class AI {
             }
         }
         enemyAliveUnits.clear();
-        for(Unit unit : en1.getUnits()){
-            enemyAliveUnits.add(unit);
-        }
-        for(Unit unit : en2.getUnits()){
-            enemyAliveUnits.add(unit);
-        }
+        enemyAliveUnits.addAll(en1.getUnits());
+        enemyAliveUnits.addAll(en2.getUnits());
         calcWeights();
     }
 
@@ -211,7 +207,7 @@ public class AI {
             weightSum += weight[unit.getTypeId()];
         }
         if(weightSum > 0){
-            weight[9] = ((world.getGameConstants().getMaxAP() - AP) / AP) * weightSum;
+            weight[9] = ((double) (world.getGameConstants().getMaxAP() - AP) / AP) * weightSum;
         }
         for(int i = 0; i < 10; i++){
             for(int c = 0; c < weight[i]; c++){
