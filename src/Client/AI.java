@@ -246,9 +246,11 @@ public class AI {
             }
         }
     }
+
     private Boolean isCrisisUnit(Unit unit){
         return false;
     }
+
     public Boolean isCrisis(){
         boolean isKingUnderAttack = false;
         int x = 0;
@@ -281,6 +283,27 @@ public class AI {
 
     public void doSpell(){
 
+    }
+
+    public void upgrade(){
+        if(world.getDamageUpgradeNumber() > 0){
+            Unit candidate = me.getUnits().get(0);
+            for(Unit unit : me.getUnits()){
+                if(unit.getAttack() > candidate.getAttack() && unit.getHp() > candidate.getHp()){
+                    candidate = unit;
+                }
+            }
+            world.upgradeUnitDamage(candidate);
+        }
+        if(world.getRangeUpgradeNumber() > 0){
+            Unit candidate = me.getUnits().get(0);
+            for(Unit unit : me.getUnits()){
+                if(unit.getRange() >= candidate.getRange() && unit.getAttack() > candidate.getAttack() && unit.getHp() > candidate.getHp()){
+                    candidate = unit;
+                }
+            }
+            world.upgradeUnitRange(candidate);
+        }
     }
 
     public void end(World world, Map<Integer, Integer> scores) {
