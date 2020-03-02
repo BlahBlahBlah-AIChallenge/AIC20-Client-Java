@@ -248,25 +248,25 @@ public class AI {
     }
 
     public Boolean isCrisis(){
-        boolean isKingUnderAttack=false;
-        int x=0;
-        Cell myKingCell=me.getKing().getCenter();
-        List<Unit> enemy1Units = en1.getUnits();
-        for(int i=0;i<enemy1Units.size();++i){
-            int y=myKingCell.getDistance(enemy1Units.get(i).getCell());
-            if(y<=enemy1Units.get(i).getRange()) isKingUnderAttack=true;
-            if(y<=3) x++;
+        boolean isKingUnderAttack = false;
+        int x = 0;
+        Cell myKingCell = me.getKing().getCenter();
+        for(Unit enemyUnit : enemyAliveUnits){
+            int y = myKingCell.getDistance(enemyUnit.getCell());
+            if (y <= enemyUnit.getRange()) {
+                isKingUnderAttack = true;
+            }
+            if(y <= 3) {
+                x++;
+            }
         }
-        List<Unit> enemy2Units = en2.getUnits();
-        for(int i=0;i<enemy2Units.size();++i){
-            int y=myKingCell.getDistance(enemy2Units.get(i).getCell());
-            if(y<=enemy2Units.get(i).getRange()) isKingUnderAttack=true;
-            if(y<=3) x++;        }
         List<Unit> myUnits = me.getUnits();
-        for(int i=0;i<myUnits.size();++i){
-            if(myKingCell.getDistance(myUnits.get(i).getCell())<=3) x--;
+        for(Unit unit : myUnits){
+            if(myKingCell.getDistance(unit.getCell()) <= 3) {
+                x--;
+            }
         }
-        return isKingUnderAttack || x>0;
+        return isKingUnderAttack || x > 0;
     }
 
     public void attack(){
