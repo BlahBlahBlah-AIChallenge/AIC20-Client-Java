@@ -221,6 +221,8 @@ public class AI {
     }
 
     public Boolean isCrisis(){
+
+
         return false;
     }
 

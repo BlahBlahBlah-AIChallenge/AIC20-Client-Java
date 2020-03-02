@@ -1,7 +1,6 @@
 package Client.Model;
 
 import Client.dto.ClientCell;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,5 +53,9 @@ public class Cell {
 
     public ClientCell castToClientCell() {
         return new ClientCell(row, col);
+    }
+
+    public int distance(Cell cell){
+        return Math.abs(this.row- cell.getRow())+Math.abs(this.col-cell.getCol());
     }
 }
