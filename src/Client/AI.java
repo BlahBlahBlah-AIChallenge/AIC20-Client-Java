@@ -239,18 +239,18 @@ public class AI {
         Cell myKingCell=me.getKing().getCenter();
         List<Unit> enemy1Units = en1.getUnits();
         for(int i=0;i<enemy1Units.size();++i){
-            int y=myKingCell.distance(enemy1Units.get(i).getCell());
+            int y=myKingCell.getDistance(enemy1Units.get(i).getCell());
             if(y<=enemy1Units.get(i).getRange()) isKingUnderAttack=true;
             if(y<=3) x++;
         }
         List<Unit> enemy2Units = en2.getUnits();
         for(int i=0;i<enemy2Units.size();++i){
-            int y=myKingCell.distance(enemy2Units.get(i).getCell());
+            int y=myKingCell.getDistance(enemy2Units.get(i).getCell());
             if(y<=enemy2Units.get(i).getRange()) isKingUnderAttack=true;
             if(y<=3) x++;        }
         List<Unit> myUnits = me.getUnits();
         for(int i=0;i<myUnits.size();++i){
-            if(myKingCell.distance(myUnits.get(i).getCell())<=3) x--;
+            if(myKingCell.getDistance(myUnits.get(i).getCell())<=3) x--;
         }
         return isKingUnderAttack || x>0;
     }

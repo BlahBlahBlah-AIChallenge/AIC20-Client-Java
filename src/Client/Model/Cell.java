@@ -55,7 +55,7 @@ public class Cell {
         return new ClientCell(row, col);
     }
 
-    public int distance(Cell cell){
+    public int getDistance(Cell cell){
         return Math.abs(this.row- cell.getRow())+Math.abs(this.col-cell.getCol());
     }
 }
