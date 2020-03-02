@@ -62,6 +62,8 @@ public class AI {
     }
 
     private Player me, friend, en1, en2;
+    private int AP;
+    private List<BaseUnit> Hand;
     private Client.Model.Map map;
 
     private List<Integer>[] unitsTargetedBy = new List[]{new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()};
@@ -70,64 +72,63 @@ public class AI {
     private List<Integer> myPaths = new ArrayList<>(), friendPaths = new ArrayList<>();
     private Map<Integer, List<Integer>> enemyUnitsPaths = new HashMap<>();
     private Map<Integer, Set<Integer>> enemyUnitsTargetKing = new HashMap<>();
+    private List<Unit> enemyAliveUnits = new ArrayList<>();
 
     private List<Integer> weightedUnits = new ArrayList<>();
 
     private void findEnemyUnitsPaths(Player first, Player second){
         for(var unit : first.getUnits()){
-            if(unit.getHp() > 1){
-                List<Integer> PathIds = new ArrayList<>();
-                Set<Integer> TargetKingIds = new HashSet<>();
-                if(enemyUnitsPaths.containsKey(unit.getUnitId())){
-                    for(var path : world.getPathsCrossingCell(unit.getCell())){
-                        if(enemyUnitsPaths.get(unit.getUnitId()).contains(path.getId())){
-                            PathIds.add(path.getId());
-                            if(myPaths.contains(path.getId())){
-                                TargetKingIds.add(me.getPlayerId());
-                            }
-                            if(friendPaths.contains(path.getId())){
-                                TargetKingIds.add(friend.getPlayerId());
-                            }
+            List<Integer> PathIds = new ArrayList<>();
+            Set<Integer> TargetKingIds = new HashSet<>();
+            if(enemyUnitsPaths.containsKey(unit.getUnitId())){
+                for(var path : world.getPathsCrossingCell(unit.getCell())){
+                    if(enemyUnitsPaths.get(unit.getUnitId()).contains(path.getId())){
+                        PathIds.add(path.getId());
+                        if(myPaths.contains(path.getId())){
+                            TargetKingIds.add(me.getPlayerId());
                         }
-                    }
-                    if(PathIds.size() > 0){
-                        enemyUnitsPaths.replace(unit.getUnitId(), PathIds);
-                        enemyUnitsTargetKing.replace(unit.getUnitId(), TargetKingIds);
+                        if(friendPaths.contains(path.getId())){
+                            TargetKingIds.add(friend.getPlayerId());
+                        }
                     }
                 }
-                else{
-                    for(var path : world.getPathsCrossingCell(unit.getCell())){
-                        if(path.getId() != first.getPathToFriend().getId()) {
-                            PathIds.add(path.getId());
-                            if(myPaths.contains(path.getId())){
-                                TargetKingIds.add(me.getPlayerId());
-                            }
-                            if(friendPaths.contains(path.getId())){
-                                TargetKingIds.add(friend.getPlayerId());
-                            }
-                        }
-                    }
-                    if(PathIds.size() == 0){
-                        for(var path : second.getPathsFromPlayer()){
-                            PathIds.add(path.getId());
-                            if(myPaths.contains(path.getId())){
-                                TargetKingIds.add(me.getPlayerId());
-                            }
-                            if(friendPaths.contains(path.getId())){
-                                TargetKingIds.add(friend.getPlayerId());
-                            }
-                        }
-                    }
-                    enemyUnitsPaths.put(unit.getUnitId(), PathIds);
-                    enemyUnitsTargetKing.put(unit.getUnitId(), TargetKingIds);
+                if(PathIds.size() > 0){
+                    enemyUnitsPaths.replace(unit.getUnitId(), PathIds);
+                    enemyUnitsTargetKing.replace(unit.getUnitId(), TargetKingIds);
                 }
+            }
+            else{
+                for(var path : world.getPathsCrossingCell(unit.getCell())){
+                    if(path.getId() != first.getPathToFriend().getId()) {
+                        PathIds.add(path.getId());
+                        if(myPaths.contains(path.getId())){
+                            TargetKingIds.add(me.getPlayerId());
+                        }
+                        if(friendPaths.contains(path.getId())){
+                            TargetKingIds.add(friend.getPlayerId());
+                        }
+                    }
+                }
+                if(PathIds.size() == 0){
+                    for(var path : second.getPathsFromPlayer()){
+                        PathIds.add(path.getId());
+                        if(myPaths.contains(path.getId())){
+                            TargetKingIds.add(me.getPlayerId());
+                        }
+                        if(friendPaths.contains(path.getId())){
+                            TargetKingIds.add(friend.getPlayerId());
+                        }
+                    }
+                }
+                enemyUnitsPaths.put(unit.getUnitId(), PathIds);
+                enemyUnitsTargetKing.put(unit.getUnitId(), TargetKingIds);
             }
         }
     }
 
-    private double unitTargetingMeProbability(int unitId){
-        double n = enemyUnitsPaths.get(unitId).size(), i = 0;
-        for(var pathId : enemyUnitsPaths.get(unitId)){
+    private double unitTargetingMeProbability(Unit unit){
+        double n = enemyUnitsPaths.get(unit.getUnitId()).size(), i = 0;
+        for(var pathId : enemyUnitsPaths.get(unit.getUnitId())){
             if(myPaths.contains(pathId)){
                 i++;
             }
@@ -143,6 +144,14 @@ public class AI {
         en1 = world.getFirstEnemy();
         en2 = world.getSecondEnemy();
         map = world.getMap();
+        parse();
+
+        lastWorld = world;
+    }
+
+    public void parse(){
+        AP = me.getAp();
+        Hand = me.getHand();
         for(var path : me.getPathsFromPlayer()){
             myPaths.add(path.getId());
         }
@@ -151,19 +160,57 @@ public class AI {
         }
         findEnemyUnitsPaths(en1, en2);
         findEnemyUnitsPaths(en2, en1);
-
-        lastWorld = world;
+        enemyAliveUnits.clear();
+        for(var unit : en1.getUnits()){
+            enemyAliveUnits.add(unit);
+        }
+        for(var unit : en2.getUnits()){
+            enemyAliveUnits.add(unit);
+        }
     }
 
-    public void parse(){
-
+    public void calcWeights(){
+        if(isCrisis()){
+            calcDefenceWeights();
+        }
+        else{
+            calcAttackWeights();
+        }
     }
 
-    public void clacAttackWeights(){
-
+    public void calcAttackWeights(){
+        weightedUnits.clear();
+        double[] weight = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        double weightSum = 0;
+        for(var unit : world.getAllBaseUnits()){
+            weight[unit.getTypeId()] = unit.getBaseRange() * 100 + unit.getBaseAttack() * 50 + (unit.isMultiple() ? 200 : 100) + (unit.getTargetType() == UnitTarget.BOTH ? 100 : 0) + (double)unit.getMaxHp() / 2.5 * 40 - unit.getAp() * 100;
+            for(var enemyUnit : enemyAliveUnits){
+                if(unitsTargetedBy[unit.getTypeId()].contains(enemyUnit.getBaseUnit().getTypeId())){
+                    weight[unit.getTypeId()] *= 1 + unitTargetingMeProbability(enemyUnit) * enemyUnit.getAttack() / 50 * unit.getBaseAttack() / enemyUnit.getHp();
+                }
+                if(unitsTargeting[unit.getTypeId()].contains(enemyUnit.getBaseUnit().getTypeId())){
+                    weight[unit.getTypeId()] *= 1 - unitTargetingMeProbability(enemyUnit) * enemyUnit.getAttack() / unit.getMaxHp() / 2;
+                }
+            }
+            if(unit.getAp() > AP){
+                weight[unit.getTypeId()] = 0;
+            }
+            if(!Hand.contains(unit)){
+                weight[unit.getTypeId()] = 0;
+            }
+            weightSum += weight[unit.getTypeId()];
+        }
+        if(weightSum > 0){
+            weight[9] = ((world.getGameConstants().getMaxAP() - AP) / AP) * weightSum;
+        }
+        for(int i = 0; i < 10; i++){
+            for(int c = 0; c < weight[i]; c++){
+                weightedUnits.add(i);
+            }
+        }
     }
 
-    public void clacDefencekWeights(){
+    public void calcDefenceWeights(){
 
     }
 
