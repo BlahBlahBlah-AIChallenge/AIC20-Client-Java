@@ -248,29 +248,27 @@ public class AI {
     }
 
     private Boolean isCrisisUnit(Unit unit){
+        Cell myKingCell = me.getKing().getCenter();
+        int x=myKingCell.getRow(),y=myKingCell.getCol();
+        int[] dx = {1,1,1,0,0,0,-1,-1,-1};
+        int[] dy = {1,0,-1,1,0,-1,1,0,-1};
+        int r=unit.getRange();
+        for(int i=0;i<9;++i){
+            Cell kingArea=new Cell(x+dx[i],y+dy[i]);
+            int d=kingArea.getDistance(unit.getCell());
+            if(d-r <= 3) return true;
+        }
+        List<Unit> myUnits = me.getUnits();
+
         return false;
     }
 
     public Boolean isCrisis(){
-        boolean isKingUnderAttack = false;
-        int x = 0;
-        Cell myKingCell = me.getKing().getCenter();
+        int x=0;
         for(Unit enemyUnit : enemyAliveUnits){
-            int y = myKingCell.getDistance(enemyUnit.getCell());
-            if (y <= enemyUnit.getRange()) {
-                isKingUnderAttack = true;
-            }
-            if(y <= 3) {
-                x++;
-            }
+            if(isCrisisUnit(enemyUnit)) x++;
         }
-        List<Unit> myUnits = me.getUnits();
-        for(Unit unit : myUnits){
-            if(myKingCell.getDistance(unit.getCell()) <= 3) {
-                x--;
-            }
-        }
-        return isKingUnderAttack || x > 0;
+        return x>3;
     }
 
     public void attack(){
