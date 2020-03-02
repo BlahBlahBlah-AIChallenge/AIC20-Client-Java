@@ -137,14 +137,21 @@ public class AI {
     }
 
     public void turn(World world) {
-        this.world = world;
+        System.out.println("turn: " + world.getCurrentTurn());
 
+        this.world = world;
         me = world.getMe();
         friend = world.getFriend();
         en1 = world.getFirstEnemy();
         en2 = world.getSecondEnemy();
         map = world.getMap();
         parse();
+
+        if(weightedUnits.size() > 0){
+            int n = weightedUnits.get(random.nextInt(weightedUnits.size()));
+            System.out.println("put: " + (n == 9 ? "Nothing" : n));
+            world.putUnit(n, selectedPath);
+        }
 
         lastWorld = world;
     }
@@ -160,6 +167,11 @@ public class AI {
         }
         findEnemyUnitsPaths(en1, en2);
         findEnemyUnitsPaths(en2, en1);
+        for(var unit : enemyAliveUnits){
+            if(enemyUnitsPaths.get(unit.getUnitId()).size() == 1){
+                System.out.println("found path: " + unit.getUnitId());
+            }
+        }
         enemyAliveUnits.clear();
         for(var unit : en1.getUnits()){
             enemyAliveUnits.add(unit);
@@ -167,6 +179,7 @@ public class AI {
         for(var unit : en2.getUnits()){
             enemyAliveUnits.add(unit);
         }
+        calcWeights();
     }
 
     public void calcWeights(){
