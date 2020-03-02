@@ -248,27 +248,34 @@ public class AI {
     }
 
     private Boolean isCrisisUnit(Unit unit){
-        Cell myKingCell = me.getKing().getCenter();
-        int x=myKingCell.getRow(),y=myKingCell.getCol();
-        int[] dx = {1,1,1,0,0,0,-1,-1,-1};
-        int[] dy = {1,0,-1,1,0,-1,1,0,-1};
         int r=unit.getRange();
-        for(int i=0;i<9;++i){
-            Cell kingArea=new Cell(x+dx[i],y+dy[i]);
-            int d=kingArea.getDistance(unit.getCell());
-            if(d-r <= 3) return true;
-        }
+        int d=me.getKing().getDistance(unit);
+        if(d-r>3) return false;
         List<Unit> myUnits = me.getUnits();
-
-        return false;
+        // ***
+        return true;
     }
 
     public Boolean isCrisis(){
         int x=0;
+        List<Unit> badUnits = new ArrayList<Unit>();
         for(Unit enemyUnit : enemyAliveUnits){
-            if(isCrisisUnit(enemyUnit)) x++;
+            if(isCrisisUnit(enemyUnit)) {
+                badUnits.add(enemyUnit);
+                x++;
+            }
         }
-        return x>3;
+        double kingPower = 10.00/(badUnits.size());
+        for(Unit enemyUnit : badUnits){
+            int dis=me.getKing().getDistance(enemyUnit);
+            int rng=enemyUnit.getRange();
+            int time=dis-rng;
+            if(dis<=6);
+            else if(rng>=6)  time=0;
+            else time-=(dis-6);
+            if((double)enemyUnit.getHp()<(time*kingPower))  x--;
+        }
+        return x>0;
     }
 
     public void attack(){
