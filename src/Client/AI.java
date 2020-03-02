@@ -311,14 +311,6 @@ public class AI {
         return x>0;
     }
 
-    public void attack(){
-
-    }
-
-    public void defence(){
-
-    }
-
     public void doSpell(){
 
     }
