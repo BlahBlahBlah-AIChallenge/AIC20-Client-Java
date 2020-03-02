@@ -137,6 +137,7 @@ public class AI {
                 return path;
             }
         }
+        return null;
     }
 
     private double unitTargetingMeProbability(Unit unit){
