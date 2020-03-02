@@ -125,6 +125,16 @@ public class AI {
         }
     }
 
+    private double unitTargetingMeProbability(int unitId){
+        double n = enemyUnitsPaths.get(unitId).size(), i = 0;
+        for(var pathId : enemyUnitsPaths.get(unitId)){
+            if(myPaths.contains(pathId)){
+                i++;
+            }
+        }
+        return i / n;
+    }
+
     public void turn(World world) {
         this.world = world;
 
