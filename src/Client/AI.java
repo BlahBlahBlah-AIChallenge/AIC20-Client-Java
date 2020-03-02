@@ -182,7 +182,7 @@ public class AI {
         weightedUnits.clear();
         double[] weight = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         double weightSum = 0;
-        for(var unit : world.getAllBaseUnits()){
+        for(var unit : Hand){
             weight[unit.getTypeId()] = unit.getBaseRange() * 100 + unit.getBaseAttack() * 50 + (unit.isMultiple() ? 200 : 100) + (unit.getTargetType() == UnitTarget.BOTH ? 100 : 0) + (double)unit.getMaxHp() / 2.5 * 40 - unit.getAp() * 100;
             for(var enemyUnit : enemyAliveUnits){
                 if(unitsTargetedBy[unit.getTypeId()].contains(enemyUnit.getBaseUnit().getTypeId())){
@@ -193,9 +193,6 @@ public class AI {
                 }
             }
             if(unit.getAp() > AP){
-                weight[unit.getTypeId()] = 0;
-            }
-            if(!Hand.contains(unit)){
                 weight[unit.getTypeId()] = 0;
             }
             weightSum += weight[unit.getTypeId()];
