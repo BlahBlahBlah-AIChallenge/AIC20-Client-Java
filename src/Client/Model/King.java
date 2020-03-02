@@ -81,7 +81,6 @@ public class King {
     }
 
     public boolean isInKing(Cell cell){
-        Cell center = this.center;
         if(Math.abs(center.getCol() - cell.getCol()) <= 1 && Math.abs(center.getRow() - cell.getRow()) <= 1)
             return true;
         return false;
