@@ -189,7 +189,12 @@ public class AI {
             myPaths.add(path.getId());
         }
         for(Path path : friend.getPathsFromPlayer()){
-            friendPaths.add(path.getId());
+            if(friend.isAlive()) {
+                friendPaths.add(path.getId());
+            }
+            else {
+                myPaths.add(path.getId());
+            }
         }
         System.out.println("myPaths: " + Arrays.toString(myPaths.toArray()));
         System.out.println("friendPaths: " + Arrays.toString(friendPaths.toArray()));
