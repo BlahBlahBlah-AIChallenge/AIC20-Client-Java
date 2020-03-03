@@ -16,7 +16,7 @@ import java.util.Map;
 public class AI {
     private Random random = new Random();
     private World world, lastWorld;
-    private Path selectedPath;
+    private int selectedPath;
 
     public void pick(World world) {
         System.out.println("pick started");
@@ -38,12 +38,7 @@ public class AI {
     }
 
     private void preProcess(){
-        selectedPath = world.getMe().getPathsFromPlayer().get(0);
-        for(Path path : world.getMe().getPathsFromPlayer()){
-            if(path.getCells().size() < selectedPath.getCells().size()){
-                selectedPath = path;
-            }
-        }
+        selectedPath = findShortestPath();
         for(BaseUnit unit1 : world.getAllBaseUnits()){
             for(BaseUnit unit2 : world.getAllBaseUnits()){
                 if(unit1.getTargetType() == UnitTarget.BOTH){
@@ -208,6 +203,76 @@ public class AI {
         enemyAliveUnits.addAll(en1.getUnits());
         enemyAliveUnits.addAll(en2.getUnits());
         calcWeights();
+
+        if(isCrisis()){
+            selectedPath = findDefencePath();
+        }
+        else{
+            selectedPath = findShortestPath();
+        }
+        System.out.println("*** selectedPath: " + selectedPath);
+    }
+
+    public int findShortestPath(){
+        Path shortestPath = world.getMe().getPathsFromPlayer().get(0);
+        for(Path path : world.getMe().getPathsFromPlayer()){
+            if(path.getCells().size() < shortestPath.getCells().size()){
+                shortestPath = path;
+            }
+        }
+        return shortestPath.getId();
+    }
+
+    public int findDefencePath(){
+        Map<Integer, Integer> pathWeight = new HashMap<>();
+        Map<Integer, Cell> furthestEnemy = new HashMap<>();
+        for(Path path : me.getPathsFromPlayer()){
+            pathWeight.put(path.getId(), 0);
+            furthestEnemy.put(path.getId(), path.getCells().get(0));
+        }
+        for(Path path : friend.getPathsFromPlayer()){
+            pathWeight.put(path.getId(), 0);
+            furthestEnemy.put(path.getId(), me.getPathToFriend().getCells().get(0));
+        }
+        for(Unit enemyUnit : enemyAliveUnits){
+            if(isCrisisUnit(enemyUnit)){
+                for(int pathId : enemyUnitsPaths.get(enemyUnit.getUnitId())){
+                    pathWeight.replace(pathId, pathWeight.get(pathId) + 3 * enemyUnit.getAttack() + enemyUnit.getHp());
+                    if(me.getKing().getDistance(enemyUnit) > me.getKing().getDistance(furthestEnemy.get(pathId))){
+                        furthestEnemy.replace(pathId, enemyUnit.getCell());
+                    }
+                }
+            }
+        }
+        for(Path path : me.getPathsFromPlayer()){
+            int pathId = path.getId();
+            int i = 1;
+            Cell now = me.getPathToFriend().getCells().get(0);
+            while (!now.equals(furthestEnemy.get(path.getId()))){
+                for(Unit unit : now.getUnits()){
+                    if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
+                        pathWeight.replace(pathId, pathWeight.get(pathId) - 3 * unit.getAttack() + unit.getHp());
+                    }
+                }
+                now = me.getPathToFriend().getCells().get(i);
+                i++;
+            }
+        }
+        for(Path path : friend.getPathsFromPlayer()){
+            int pathId = path.getId();
+            int i = 1;
+            Cell now = me.getPathToFriend().getCells().get(0);
+            while (!now.equals(furthestEnemy.get(path.getId()))){
+                for(Unit unit : now.getUnits()){
+                    if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
+                        pathWeight.replace(pathId, pathWeight.get(pathId) - 3 * unit.getAttack() - unit.getHp());
+                    }
+                }
+                now = me.getPathToFriend().getCells().get(i);
+                i++;
+            }
+        }
+        return Collections.max(pathWeight.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
     }
 
     public void calcWeights(){
