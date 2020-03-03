@@ -909,6 +909,8 @@ public class Game implements World {
     private void setOrderOfUnitsPaths() {
         for (Player player : players) {
             for (Unit unit : player.getUnits()) {
+                if(unit.getPath() == null)
+                    continue;
                 Path newPath = new Path(unit.getPath());
                 if (newPath.getCells().indexOf(player.getKing().getCenter()) != 0)
                     Collections.reverse(newPath.getCells());
