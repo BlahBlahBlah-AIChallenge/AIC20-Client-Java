@@ -291,6 +291,7 @@ public class AI {
     }
 
     private boolean isCrisisUnit(Unit unit){
+        if(unitTargetingMeProbability(unit)<=0.01) return false;
         int r=unit.getRange();
         int d=me.getKing().getDistance(unit);
         if(d-r>3) return false;
@@ -316,7 +317,7 @@ public class AI {
             if(dis<=6);
             else if(rng>=6)  time=0;
             else time-=(dis-6);
-            if((double)enemyUnit.getHp()<(time*kingPower))  x--;
+            if((double)enemyUnit.getHp()<=(time*kingPower))  x--;
         }
         return x>0;
     }
