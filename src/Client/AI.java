@@ -224,7 +224,7 @@ public class AI {
         }
     }
 
-    public double[] balanceWeight(double[] weight){
+    public double[] balanceWeights(double[] weight){
         Map<Double, Integer> units = new TreeMap<>(Collections.reverseOrder());
         for(int i = 0; i < 9; i++){
             units.put(weight[i], i);
@@ -258,7 +258,7 @@ public class AI {
             }
             weightSum += weight[unit.getTypeId()];
         }
-        weight = balanceWeight(weight);
+        weight = balanceWeights(weight);
         if(weightSum > 0){
             weight[9] = ((double) (world.getGameConstants().getMaxAP() - AP) / AP) * weightSum;
         }
