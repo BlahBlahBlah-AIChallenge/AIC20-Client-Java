@@ -291,35 +291,45 @@ public class AI {
     }
 
     private boolean isCrisisUnit(Unit unit){
-        if(unitTargetingMeProbability(unit)<=0.01) return false;
-        int r=unit.getRange();
-        int d=me.getKing().getDistance(unit);
-        if(d-r>3) return false;
+        if(unitTargetingMeProbability(unit) <= 0.01){
+            return false;
+        }
+        int range = unit.getRange();
+        int distance = me.getKing().getDistance(unit);
+        if(distance - range > 3) {
+            return false;
+        }
         List<Unit> myUnits = me.getUnits();
         // ***
         return true;
     }
 
     public boolean isCrisis(){
-        int x=0;
-        List<Unit> badUnits = new ArrayList<Unit>();
+        int x = 0;
+        List<Unit> badUnits = new ArrayList<>();
         for(Unit enemyUnit : enemyAliveUnits){
             if(isCrisisUnit(enemyUnit)) {
                 badUnits.add(enemyUnit);
                 x++;
             }
         }
-        double kingPower = 10.00/(badUnits.size());
-        for(Unit enemyUnit : badUnits){
-            int dis=me.getKing().getDistance(enemyUnit);
-            int rng=enemyUnit.getRange();
-            int time=dis-rng;
-            if(dis<=6);
-            else if(rng>=6)  time=0;
-            else time-=(dis-6);
-            if((double)enemyUnit.getHp()<=(time*kingPower))  x--;
+        double kingPower = (double) me.getKing().getAttack() / badUnits.size();
+        for(Unit enemyUnit : badUnits) {
+            int distance = me.getKing().getDistance(enemyUnit);
+            int range = enemyUnit.getRange();
+            int kingRange = me.getKing().getRange();
+            int time = distance - range;
+            if (distance > kingRange){
+                if (range >= kingRange) {
+                    time = 0;
+                }
+                else {
+                    time -= distance - kingRange;
+                }
+            }
+            if((double) enemyUnit.getHp() <= time * kingPower) x--;
         }
-        return x>0;
+        return x > 0;
     }
 
     public void doSpell(){
