@@ -247,14 +247,14 @@ public class AI {
         for(Path path : me.getPathsFromPlayer()){
             int pathId = path.getId();
             int i = 1;
-            Cell now = me.getPathToFriend().getCells().get(0);
+            Cell now = path.getCells().get(0);
             while (!now.equals(furthestEnemy.get(path.getId()))){
                 for(Unit unit : now.getUnits()){
                     if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
                         pathWeight.replace(pathId, pathWeight.get(pathId) - 3 * unit.getAttack() + unit.getHp());
                     }
                 }
-                now = me.getPathToFriend().getCells().get(i);
+                now = path.getCells().get(i);
                 i++;
             }
         }
