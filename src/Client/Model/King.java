@@ -100,11 +100,15 @@ public class King {
     }
 
     public int getDistance(Unit u){
+        return getDistance(u.getCell());
+    }
+
+    public int getDistance(Cell cell) {
         int ans = Integer.MAX_VALUE;
         for(int i = center.getRow() - 1; i <= center.getRow() + 1; i++){
             for(int j = center.getCol() - 1; j <= center.getCol() + 1; j++){
                 Cell c = new Cell(i, j);
-                ans = Math.min(ans, c.getDistance(u.getCell()));
+                ans = Math.min(ans, c.getDistance(cell));
             }
         }
         return ans;
