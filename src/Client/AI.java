@@ -34,6 +34,7 @@ public class AI {
         world.chooseHand(myHand);
 
         preProcess();
+        System.out.println("----------------------");
     }
 
     private void preProcess(){
@@ -159,15 +160,17 @@ public class AI {
         en1 = world.getFirstEnemy();
         en2 = world.getSecondEnemy();
         map = world.getMap();
+
         parse();
 
         if(weightedUnits.size() > 0){
             int n = weightedUnits.get(random.nextInt(weightedUnits.size()));
-            System.out.println("put: " + (n == 9 ? "Nothing" : n));
+            System.out.println("put: " + (n == 9 ? "nothing" : n));
             world.putUnit(n, selectedPath);
         }
 
         lastWorld = world;
+        System.out.println("----------------------");
     }
 
     public void parse(){
@@ -181,11 +184,7 @@ public class AI {
         }
         findEnemyUnitsPaths(en1, en2);
         findEnemyUnitsPaths(en2, en1);
-        for(Unit unit : enemyAliveUnits){
-            if(enemyUnitsPaths.get(unit.getUnitId()).size() == 1){
-                System.out.println("found path: " + unit.getUnitId());
-            }
-        }
+
         enemyAliveUnits.clear();
         enemyAliveUnits.addAll(en1.getUnits());
         enemyAliveUnits.addAll(en2.getUnits());
@@ -194,10 +193,15 @@ public class AI {
 
     public void calcWeights(){
         if(isCrisis()){
+            System.out.println("### crisis mode!");
             calcDefenceWeights();
         }
         else{
+            System.out.println("### normal mode!");
             calcAttackWeights();
+        }
+        for(int i = 0; i < 9; i++) {
+            System.out.println("weight " + i + ":\t" + Collections.frequency(weightedUnits, i));
         }
     }
 
@@ -231,14 +235,14 @@ public class AI {
     }
 
     public void calcDefenceWeights() {
-        boolean isKingUnderAttack = false;
         weightedUnits.clear();
         double[] weight = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        boolean isAllZero = true;
+        boolean isKingUnderAttack = false, isAllZero = true;
 
         for (Unit enemyUnit : enemyAliveUnits) {
-            if(me.getKing().getDistance(enemyUnit) <= enemyUnit.getRange())
+            if(me.getKing().getDistance(enemyUnit) <= enemyUnit.getRange()) {
                 isKingUnderAttack = true;
+            }
         }
 
         if(!isKingUnderAttack){
@@ -248,21 +252,20 @@ public class AI {
                 }
             }
             for (Unit enemyUnit : enemyAliveUnits) {
-                if (!isCrisisUnit(enemyUnit))
+                if (!isCrisisUnit(enemyUnit)) {
                     continue;
-                int minDis = me.getKing().getDistance(enemyUnit);
-                int rng = enemyUnit.getRange();
+                }
                 int dis = me.getKing().getCenter().getDistance(enemyUnit.getCell());
-                int time = minDis - rng;
+                int time = me.getKing().getDistance(enemyUnit) - enemyUnit.getRange();
                 for (BaseUnit unit : Hand) {
-                    if (dis - 2 * time > unit.getBaseRange())
+                    if (dis - 2 * time > unit.getBaseRange()) {
                         weight[unit.getTypeId()] = 0;
+                    }
                 }
             }
             for(int i = 0; i < 10; i++) {
                 if (weight[i] != 0) {
                     isAllZero = false;
-                    break;
                 }
             }
         }
@@ -280,7 +283,7 @@ public class AI {
         }
     }
 
-    private Boolean isCrisisUnit(Unit unit){
+    private boolean isCrisisUnit(Unit unit){
         int r=unit.getRange();
         int d=me.getKing().getDistance(unit);
         if(d-r>3) return false;
@@ -289,7 +292,7 @@ public class AI {
         return true;
     }
 
-    public Boolean isCrisis(){
+    public boolean isCrisis(){
         int x=0;
         List<Unit> badUnits = new ArrayList<Unit>();
         for(Unit enemyUnit : enemyAliveUnits){
@@ -323,6 +326,7 @@ public class AI {
                     candidate = unit;
                 }
             }
+            System.out.println("upgrade damage: " + candidate.getUnitId());
             world.upgradeUnitDamage(candidate);
         }
         if(world.getRangeUpgradeNumber() > 0){
@@ -332,12 +336,13 @@ public class AI {
                     candidate = unit;
                 }
             }
+            System.out.println("upgrade range: " + candidate.getUnitId());
             world.upgradeUnitRange(candidate);
         }
     }
 
     public void end(World world, Map<Integer, Integer> scores) {
-        System.out.println("end started");
-        System.out.println("My score: " + scores.get(world.getMe().getPlayerId()));
+        System.out.println("game ended");
+        System.out.println("my score: " + scores.get(me.getPlayerId()));
     }
 }
