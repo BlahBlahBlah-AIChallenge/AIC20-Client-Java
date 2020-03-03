@@ -224,6 +224,21 @@ public class AI {
         }
     }
 
+    public double[] balanceWeight(double[] weight){
+        Map<Double, Integer> units = new TreeMap<>(Collections.reverseOrder());
+        for(int i = 0; i < 9; i++){
+            units.put(weight[i], i);
+        }
+        int zarib = 8;
+        for(Map.Entry<Double, Integer> unit : units.entrySet()){
+            if(zarib > 0){
+                weight[unit.getValue()] *= zarib;
+                zarib /= 2;
+            }
+        }
+        return weight;
+    }
+
     public void calcAttackWeights(){
         weightedUnits.clear();
         double[] weight = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -243,6 +258,7 @@ public class AI {
             }
             weightSum += weight[unit.getTypeId()];
         }
+        weight = balanceWeight(weight);
         if(weightSum > 0){
             weight[9] = ((double) (world.getGameConstants().getMaxAP() - AP) / AP) * weightSum;
         }
