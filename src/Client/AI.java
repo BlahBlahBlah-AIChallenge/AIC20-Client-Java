@@ -392,8 +392,6 @@ public class AI {
         if(distance - range > 3) {
             return false;
         }
-        List<Unit> myUnits = me.getUnits();
-        // ***
         return true;
     }
 
