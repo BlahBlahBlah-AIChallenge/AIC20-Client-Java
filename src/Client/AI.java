@@ -183,14 +183,21 @@ public class AI {
     public void parse(){
         AP = me.getAp();
         Hand = me.getHand();
+        myPaths.clear();
+        friendPaths.clear();
         for(Path path : me.getPathsFromPlayer()){
             myPaths.add(path.getId());
         }
         for(Path path : friend.getPathsFromPlayer()){
             friendPaths.add(path.getId());
         }
+        System.out.println("myPaths: " + Arrays.toString(myPaths.toArray()));
+        System.out.println("friendPaths: " + Arrays.toString(friendPaths.toArray()));
         findEnemyUnitsPaths(en1, en2);
         findEnemyUnitsPaths(en2, en1);
+        for(Unit unit : enemyAliveUnits){
+            System.out.println("unit " + unit.getUnitId() + " paths: " + Arrays.toString(enemyUnitsPaths.get(unit.getUnitId()).toArray()));
+        }
 
         enemyAliveUnits.clear();
         enemyAliveUnits.addAll(en1.getUnits());
