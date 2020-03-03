@@ -246,30 +246,51 @@ public class AI {
         }
         for(Path path : me.getPathsFromPlayer()){
             int pathId = path.getId();
-            int i = 1;
-            Cell now = path.getCells().get(0);
-            while (!now.equals(furthestEnemy.get(path.getId()))){
-                for(Unit unit : now.getUnits()){
-                    if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
-                        pathWeight.replace(pathId, pathWeight.get(pathId) - 3 * unit.getAttack() + unit.getHp());
-                    }
-                }
-                now = path.getCells().get(i);
-                i++;
-            }
-        }
-        for(Path path : friend.getPathsFromPlayer()){
-            int pathId = path.getId();
-            int i = 1;
-            Cell now = me.getPathToFriend().getCells().get(0);
-            while (!now.equals(furthestEnemy.get(path.getId()))){
-                for(Unit unit : now.getUnits()){
+            for (Cell cell : path.getCells()){
+                for(Unit unit : cell.getUnits()){
                     if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
                         pathWeight.replace(pathId, pathWeight.get(pathId) - 3 * unit.getAttack() - unit.getHp());
                     }
                 }
-                now = me.getPathToFriend().getCells().get(i);
-                i++;
+                if(cell.equals(furthestEnemy.get(path.getId()))){
+                    break;
+                }
+            }
+        }
+        for(Path path : friend.getPathsFromPlayer()){
+            int pathId = path.getId();
+            int weight = pathWeight.get(pathId);
+            boolean found = false;
+            for (Cell cell : me.getPathToFriend().getCells()){
+                for(Unit unit : cell.getUnits()){
+                    if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
+                        weight -= 3 * unit.getAttack() + unit.getHp();
+                    }
+                }
+                if(cell.equals(furthestEnemy.get(path.getId()))){
+                    found = true;
+                    break;
+                }
+            }
+            if(found) {
+                pathWeight.replace(pathId, weight);
+            }
+            else {
+                weight = pathWeight.get(pathId);
+                for (Cell cell : path.getCells()){
+                    for(Unit unit : cell.getUnits()){
+                        if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
+                            weight -= 3 * unit.getAttack() + unit.getHp();
+                        }
+                    }
+                    if(cell.equals(furthestEnemy.get(path.getId()))){
+                        found = true;
+                        break;
+                    }
+                }
+                if(found) {
+                    pathWeight.replace(pathId, weight);
+                }
             }
         }
         return Collections.max(pathWeight.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
