@@ -154,16 +154,16 @@ public class AI {
     public void turn(World world) {
         System.out.println("turn: " + world.getCurrentTurn());
 
-        if(!me.isAlive()) {
-            System.out.println("==== I'm dead ====");
-        }
-
         this.world = world;
         me = world.getMe();
         friend = world.getFriend();
         en1 = world.getFirstEnemy();
         en2 = world.getSecondEnemy();
         map = world.getMap();
+
+        if(!me.isAlive()) {
+            System.out.println("==== I'm dead ====");
+        }
 
         parse();
 
