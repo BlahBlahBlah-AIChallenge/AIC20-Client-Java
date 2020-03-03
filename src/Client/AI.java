@@ -169,6 +169,9 @@ public class AI {
             world.putUnit(n, selectedPath);
         }
 
+        doSpell();
+        upgrade();
+
         lastWorld = world;
         System.out.println("----------------------");
     }
