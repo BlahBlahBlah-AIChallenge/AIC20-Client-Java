@@ -462,7 +462,7 @@ public class AI {
         if(world.getRangeUpgradeNumber() > 0){
             Unit candidate = me.getUnits().get(0);
             for(Unit unit : me.getUnits()){
-                if(unit.getRange() >= candidate.getRange() && unit.getAttack() > candidate.getAttack() && unit.getHp() > candidate.getHp()){
+                if(unit.getRange() >= candidate.getRange() && unit.getAttack() >= candidate.getAttack() && unit.getHp() >= candidate.getHp()){
                     candidate = unit;
                 }
             }
