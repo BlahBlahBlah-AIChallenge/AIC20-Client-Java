@@ -1,6 +1,7 @@
 package Client.Model;
 
 import Client.dto.ClientCell;
+
 import java.util.ArrayList;
 import java.util.List;
 
