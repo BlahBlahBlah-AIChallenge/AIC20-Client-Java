@@ -145,6 +145,8 @@ public class AI {
         return i / n;
     }
 
+    private int randomUnits = 0;
+
     public void turn(World world) {
         System.out.println("turn: " + world.getCurrentTurn());
 
@@ -165,6 +167,11 @@ public class AI {
             if (weightedUnits.size() > 0) {
                 int n = weightedUnits.get(random.nextInt(weightedUnits.size()));
                 System.out.println("put: " + (n == 9 ? "nothing" : n));
+                if(n != 9 && randomUnits * 10 < world.getCurrentTurn()){
+                    randomUnits++;
+                    selectedPath = friend.getPathsFromPlayer().get(random.nextInt(friend.getPathsFromPlayer().size())).getId();
+                    System.out.println("putting random unit !!!");
+                }
                 world.putUnit(n, selectedPath);
             }
 
