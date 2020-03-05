@@ -163,4 +163,10 @@ public class Unit {
         this.affectedSpells = affectedSpells;
     }
 
+    @Override
+    public String toString() {
+        return "Unit{ " +
+                "unitId = " + unitId +
+                " }";
+    }
 }
