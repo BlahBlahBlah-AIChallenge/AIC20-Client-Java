@@ -161,14 +161,16 @@ public class AI {
 
         parse();
 
-        if(weightedUnits.size() > 0){
-            int n = weightedUnits.get(random.nextInt(weightedUnits.size()));
-            System.out.println("put: " + (n == 9 ? "nothing" : n));
-            world.putUnit(n, selectedPath);
-        }
+        if(me.isAlive()) {
+            if (weightedUnits.size() > 0) {
+                int n = weightedUnits.get(random.nextInt(weightedUnits.size()));
+                System.out.println("put: " + (n == 9 ? "nothing" : n));
+                world.putUnit(n, selectedPath);
+            }
 
-        doSpell();
-        upgrade();
+            doSpell();
+            upgrade();
+        }
 
         lastWorld = world;
         System.out.println("----------------------");
