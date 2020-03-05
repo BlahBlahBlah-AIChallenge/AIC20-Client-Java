@@ -215,13 +215,14 @@ public class AI {
     }
 
     public int findShortestPath(){
-        Path shortestPath = world.getMe().getPathsFromPlayer().get(0);
-        for(Path path : world.getMe().getPathsFromPlayer()){
+        Path en1Path = world.getShortestPathToCell(me.getPlayerId(), en1.getKing().getCenter());
+        Path en2Path = world.getShortestPathToCell(me.getPlayerId(), en2.getKing().getCenter());
+        /*for(Path path : world.getMe().getPathsFromPlayer()){
             if(path.getCells().size() < shortestPath.getCells().size()){
                 shortestPath = path;
             }
-        }
-        return shortestPath.getId();
+        }*/
+        return en1Path.getCells().size() < en2Path.getCells().size() ? en1Path.getId() : en2Path.getId();
     }
 
     public int findDefencePath(){
