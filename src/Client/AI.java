@@ -248,7 +248,7 @@ public class AI {
             for (Cell cell : path.getCells()){
                 for(Unit unit : cell.getUnits()){
                     if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
-                        pathWeight.replace(pathId, pathWeight.get(pathId) - 3 * unit.getAttack() - unit.getHp());
+                        pathWeight.replace(pathId, Math.max(0, pathWeight.get(pathId) - 3 * unit.getAttack() - unit.getHp()));
                     }
                 }
                 if(cell.equals(furthestEnemy.get(path.getId()))){
@@ -272,7 +272,7 @@ public class AI {
                 }
             }
             if(found) {
-                pathWeight.replace(pathId, weight);
+                pathWeight.replace(pathId, Math.max(0, weight));
             }
             else {
                 weight = pathWeight.get(pathId);
@@ -288,9 +288,12 @@ public class AI {
                     }
                 }
                 if(found) {
-                    pathWeight.replace(pathId, weight);
+                    pathWeight.replace(pathId, Math.max(0, weight));
                 }
             }
+        }
+        if(Collections.max(pathWeight.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue() == Collections.min(pathWeight.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue()){
+            return findShortestPath();
         }
         return Collections.max(pathWeight.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
     }
