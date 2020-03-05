@@ -319,11 +319,11 @@ public class AI {
         for(int i = 0; i < 9; i++){
             units.put(weight[i], i);
         }
-        int zarib = 8;
+        int factor = 8;
         for(Map.Entry<Double, Integer> unit : units.entrySet()){
-            if(zarib > 0){
-                weight[unit.getValue()] *= zarib;
-                zarib /= 2;
+            if(factor > 0){
+                weight[unit.getValue()] *= factor;
+                factor /= 2;
             }
         }
         return weight;
