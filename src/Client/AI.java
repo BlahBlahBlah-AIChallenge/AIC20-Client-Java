@@ -37,7 +37,6 @@ public class AI {
     }
 
     private void preProcess(){
-        selectedPath = findShortestPath();
         for(BaseUnit unit1 : world.getAllBaseUnits()){
             for(BaseUnit unit2 : world.getAllBaseUnits()){
                 if(unit1.getTargetType() == UnitTarget.BOTH){
@@ -169,7 +168,7 @@ public class AI {
                 System.out.println("put: " + (n == 9 ? "nothing" : n));
                 if(n != 9 && randomUnits * 10 < world.getCurrentTurn()){
                     randomUnits++;
-                    selectedPath = friend.getPathsFromPlayer().get(random.nextInt(friend.getPathsFromPlayer().size())).getId();
+                    selectedPath = findShortestPath(friend);
                     System.out.println("putting random unit !!!");
                 }
                 world.putUnit(n, selectedPath);
@@ -216,14 +215,14 @@ public class AI {
             selectedPath = findDefencePath();
         }
         else{
-            selectedPath = findShortestPath();
+            selectedPath = findShortestPath(me);
         }
         System.out.println("*** selectedPath: " + selectedPath);
     }
 
-    public int findShortestPath(){
-        Path en1Path = world.getShortestPathToCell(me.getPlayerId(), en1.getKing().getCenter());
-        Path en2Path = world.getShortestPathToCell(me.getPlayerId(), en2.getKing().getCenter());
+    public int findShortestPath(Player from){
+        Path en1Path = world.getShortestPathToCell(from.getPlayerId(), en1.getKing().getCenter());
+        Path en2Path = world.getShortestPathToCell(from.getPlayerId(), en2.getKing().getCenter());
         /*for(Path path : world.getMe().getPathsFromPlayer()){
             if(path.getCells().size() < shortestPath.getCells().size()){
                 shortestPath = path;
@@ -305,7 +304,7 @@ public class AI {
             }
         }
         if(Collections.max(pathWeight.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue() == Collections.min(pathWeight.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue()){
-            return findShortestPath();
+            return findShortestPath(me);
         }
         return Collections.max(pathWeight.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
     }
