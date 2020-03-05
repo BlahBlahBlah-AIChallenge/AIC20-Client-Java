@@ -2,7 +2,6 @@ package Client;
 
 import Client.Model.*;
 
-import javax.swing.plaf.basic.BasicGraphicsUtils;
 import java.util.*;
 import java.util.Map;
 
@@ -444,8 +443,167 @@ public class AI {
         return x > 0;
     }
 
-    public void doSpell(){
+    public boolean doProbability(int numerator, int denominator, int divide) {
+        if (numerator >= denominator)
+            return true;
+        Random rand = new Random();
+        int r = rand.nextInt(denominator);
+        return r < ((double)numerator / divide);
+    }
 
+    public void doSpell(){
+        Spell haste = world.getSpellById(0);
+        Spell damage = world.getSpellById(1);
+        Spell heal = world.getSpellById(2);
+        Spell tele = world.getSpellById(3);
+        Spell duplicate = world.getSpellById(4);
+        Spell poison = world.getSpellById(5);
+        int hasteCount = me.getSpellCount(haste);
+        int damageCount = me.getSpellCount(damage);
+        int healCount = me.getSpellCount(heal);
+        int teleCount = me.getSpellCount(tele);
+        int duplicateCount = me.getSpellCount(duplicate);
+        int poisonCount = me.getSpellCount(poison);
+
+        int n = map.getRowNum();
+        int m = map.getColNum();
+        if(healCount > 0){
+            int max = 0;
+            Cell ans = null;
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < m; j++){
+                    int current = 0;
+                    for(Unit unit : world.getAreaSpellTargets(i, j, heal)){
+                        current += Math.min(2, unit.getBaseUnit().getMaxHp() - unit.getHp());
+                    }
+                    if(max < current){
+                        max = current;
+                        ans = map.getCell(i, j);
+                    }
+                }
+            }
+            if(ans != null && doProbability(max, 10, 4)){
+                world.castAreaSpell(ans, heal);
+                System.out.println("casted spell heal on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, heal).toArray()));
+                return;
+            }
+        }
+        if(damageCount > 0){
+            int max = 0;
+            Cell ans = null;
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < m; j++){
+                    int current = 0;
+                    for(Unit unit : world.getAreaSpellTargets(i, j, damage)){
+                        current += Math.min(4, unit.getHp());
+                    }
+                    if(max < current){
+                        max = current;
+                        ans = map.getCell(i, j);
+                    }
+                }
+            }
+            if(ans != null && doProbability(max, 20, 4)){
+                world.castAreaSpell(ans, damage);
+                System.out.println("casted spell damage on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, damage).toArray()));
+                return;
+            }
+        }
+        if(poisonCount > 0){
+            int max = 0;
+            Cell ans = null;
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < m; j++){
+                    int current = 0;
+                    for(Unit unit : world.getAreaSpellTargets(i, j, poison)){
+                        current += Math.min(3, unit.getHp());
+                    }
+                    if(max < current){
+                        max = current;
+                        ans = map.getCell(i, j);
+                    }
+                }
+            }
+            if(ans != null && doProbability(max, 15, 4)){
+                world.castAreaSpell(ans, poison);
+                System.out.println("casted spell poison on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, poison).toArray()));
+                return;
+            }
+        }
+        if(duplicateCount > 0){
+            int max = 0;
+            Cell ans = null;
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < m; j++){
+                    int noTarget = 2 * world.getAreaSpellTargets(i, j, duplicate).size() - 1;
+                    int withTarget = -5;
+                    for(Unit unit : world.getAreaSpellTargets(i, j, duplicate)){
+                        if(unit.getTargetCell() != null) {
+                            withTarget += 10;
+                            noTarget -= 2;
+                        }
+                    }
+                    int current = Math.max(0, noTarget) + Math.max(0, withTarget);
+                    if(max < current){
+                        max = current;
+                        ans = map.getCell(i, j);
+                    }
+                }
+            }
+            if(ans != null && doProbability(max, 15, 4)){
+                world.castAreaSpell(ans, duplicate);
+                System.out.println("casted spell duplicate on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, duplicate).toArray()));
+                return;
+            }
+        }
+        if(hasteCount > 0){
+            int max = 0;
+            Cell ans = null;
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < m; j++){
+                    int current = 0;
+                    for(Unit unit : world.getAreaSpellTargets(i, j, haste)){
+                        boolean found = false;
+                        for(Cell cell : unit.getPath().getCells()){
+                            if(cell.equals(unit.getCell())){
+                                found = true;
+                            }
+                            else if(!found){
+                                continue;
+                            }
+                            boolean hasFriend = false, hasEnemy = false;
+                            for(Unit cellUnit : cell.getUnits()){
+                                if((cellUnit.getPlayerId() == me.getPlayerId() || cellUnit.getPlayerId() == friend.getPlayerId()) && !world.getAreaSpellTargets(i, j, haste).contains(cellUnit)){
+                                    hasFriend = true;
+                                }
+                                else{
+                                    hasEnemy = true;
+                                }
+                            }
+                            if(hasFriend){
+                                current++;
+                            }
+                            else if(hasEnemy){
+                                break;
+                            }
+                        }
+                    }
+                    if(max < current){
+                        max = current;
+                        ans = map.getCell(i, j);
+                    }
+                }
+            }
+            if(ans != null && doProbability(max, 5, 2)){
+                world.castAreaSpell(ans, haste);
+                System.out.println("casted spell haste on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, haste).toArray()));
+                return;
+            }
+        }
+        if(teleCount > 0){
+            // Later
+            return;
+        }
     }
 
     public void upgrade(){
