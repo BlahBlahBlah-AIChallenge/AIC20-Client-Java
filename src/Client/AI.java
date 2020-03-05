@@ -236,6 +236,7 @@ public class AI {
         for(Unit enemyUnit : enemyAliveUnits){
             if(isCrisisUnit(enemyUnit)){
                 for(int pathId : enemyUnitsPaths.get(enemyUnit.getUnitId())){
+                    pathWeight.putIfAbsent(pathId, 0);
                     pathWeight.replace(pathId, pathWeight.get(pathId) + 3 * enemyUnit.getAttack() + enemyUnit.getHp());
                     if(me.getKing().getDistance(enemyUnit) > me.getKing().getDistance(furthestEnemy.get(pathId))){
                         furthestEnemy.replace(pathId, enemyUnit.getCell());
@@ -258,6 +259,7 @@ public class AI {
         }
         for(Path path : friend.getPathsFromPlayer()){
             int pathId = path.getId();
+            pathWeight.putIfAbsent(pathId, 0);
             int weight = pathWeight.get(pathId);
             boolean found = false;
             for (Cell cell : me.getPathToFriend().getCells()){
