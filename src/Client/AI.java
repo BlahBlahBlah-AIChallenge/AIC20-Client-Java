@@ -490,7 +490,7 @@ public class AI {
                     }
                 }
             }
-            if(ans != null && doProbability(max, 10, 4)){
+            if(ans != null && doProbability(max, 10, 3)){
                 world.castAreaSpell(ans, heal);
                 System.out.println("casted spell heal on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, heal).toArray()));
                 return;
@@ -511,7 +511,7 @@ public class AI {
                     }
                 }
             }
-            if(ans != null && doProbability(max, 20, 4)){
+            if(ans != null && doProbability(max, 20, 3)){
                 world.castAreaSpell(ans, damage);
                 System.out.println("casted spell damage on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, damage).toArray()));
                 return;
@@ -532,7 +532,7 @@ public class AI {
                     }
                 }
             }
-            if(ans != null && doProbability(max, 15, 4)){
+            if(ans != null && doProbability(max, 15, 3)){
                 world.castAreaSpell(ans, poison);
                 System.out.println("casted spell poison on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, poison).toArray()));
                 return;
@@ -558,7 +558,7 @@ public class AI {
                     }
                 }
             }
-            if(ans != null && doProbability(max, 15, 4)){
+            if(ans != null && doProbability(max, 15, 3)){
                 world.castAreaSpell(ans, duplicate);
                 System.out.println("casted spell duplicate on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, duplicate).toArray()));
                 return;
