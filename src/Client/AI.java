@@ -189,7 +189,7 @@ public class AI {
         if(path.get(0) != me.getKing().getCenter())
             Collections.reverse(path);
         int len = path.size();
-        for(int i = (len + 1) / 2; i < len; i++){
+        for(int i = len / 2; i < len; i++){
             for(Unit unit : path.get(i).getUnits()){
                 if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
                     return true;
