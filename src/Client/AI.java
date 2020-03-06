@@ -168,8 +168,10 @@ public class AI {
                 System.out.println("put: " + (n == 9 ? "nothing" : n));
                 if(n != 9 && randomUnits * 10 < world.getCurrentTurn()){
                     randomUnits++;
-                    selectedPath = findShortestPath(friend);
-                    System.out.println("putting random unit !!!");
+                    if(canHelpFriend()) {
+                        selectedPath = findShortestPath(friend);
+                        System.out.println("putting random unit !!!");
+                    }
                 }
                 world.putUnit(n, selectedPath);
             }
@@ -180,6 +182,21 @@ public class AI {
 
         lastWorld = world;
         System.out.println("----------------------");
+    }
+
+    public boolean canHelpFriend(){
+        List<Cell> path = map.getPathById(findShortestPath(me)).getCells();
+        if(path.get(0) != me.getKing().getCenter())
+            Collections.reverse(path);
+        int len = path.size();
+        for(int i = (len + 1) / 2; i < len; i++){
+            for(Unit unit : path.get(i).getUnits()){
+                if(unit.getPlayerId() == me.getPlayerId() || unit.getPlayerId() == friend.getPlayerId()){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void parse(){

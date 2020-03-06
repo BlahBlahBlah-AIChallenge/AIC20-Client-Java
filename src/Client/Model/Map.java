@@ -79,4 +79,13 @@ public class Map {
         this.cells = cells;
     }
 
+    public Path getPathById(int id){
+        for(Path path : paths){
+            if(path.getId() == id){
+                return path;
+            }
+        }
+        return null;
+    }
+
 }
