@@ -245,12 +245,12 @@ public class AI {
                 shortestPath = path;
             }
         }*/
-        if(!en1.isAlive()){
+        /*if(!en1.isAlive()){
             return en2Path.getId();
         }
         if(!en2.isAlive()){
             return en1Path.getId();
-        }
+        }*/
         return en1Path.getCells().size() < en2Path.getCells().size() ? en1Path.getId() : en2Path.getId();
     }
 
