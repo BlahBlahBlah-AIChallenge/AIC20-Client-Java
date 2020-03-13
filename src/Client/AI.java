@@ -512,7 +512,7 @@ public class AI {
                 for(int j = 0; j < m; j++){
                     int current = 0;
                     for(Unit unit : world.getAreaSpellTargets(i, j, heal)){
-                        current += Math.min(2, unit.getBaseUnit().getMaxHp() - unit.getHp());
+                        current += Math.min(heal.getPower() * heal.getDuration(), unit.getBaseUnit().getMaxHp() - unit.getHp());
                     }
                     if(max < current){
                         max = current;
@@ -520,7 +520,7 @@ public class AI {
                     }
                 }
             }
-            if(ans != null && doProbability(max, 10, 3)){
+            if(ans != null && doProbability(max, heal.getPower() * heal.getDuration() * 5, 3)){
                 world.castAreaSpell(ans, heal);
                 System.out.println("casted spell heal on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, heal).toArray()));
                 return;
@@ -533,7 +533,7 @@ public class AI {
                 for(int j = 0; j < m; j++){
                     int current = 0;
                     for(Unit unit : world.getAreaSpellTargets(i, j, damage)){
-                        current += Math.min(4, unit.getHp());
+                        current += Math.min(damage.getPower() * damage.getDuration(), unit.getHp());
                     }
                     if(max < current){
                         max = current;
@@ -541,7 +541,7 @@ public class AI {
                     }
                 }
             }
-            if(ans != null && doProbability(max, 20, 3)){
+            if(ans != null && doProbability(max, damage.getPower() * damage.getDuration() * 5, 3)){
                 world.castAreaSpell(ans, damage);
                 System.out.println("casted spell damage on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, damage).toArray()));
                 return;
@@ -554,7 +554,7 @@ public class AI {
                 for(int j = 0; j < m; j++){
                     int current = 0;
                     for(Unit unit : world.getAreaSpellTargets(i, j, poison)){
-                        current += Math.min(3, unit.getHp());
+                        current += Math.min(poison.getPower() * poison.getDuration(), unit.getHp());
                     }
                     if(max < current){
                         max = current;
@@ -562,7 +562,7 @@ public class AI {
                     }
                 }
             }
-            if(ans != null && doProbability(max, 15, 3)){
+            if(ans != null && doProbability(max, poison.getPower() * poison.getDuration() * 5, 3)){
                 world.castAreaSpell(ans, poison);
                 System.out.println("casted spell poison on:\t" + Arrays.toString(world.getAreaSpellTargets(ans, poison).toArray()));
                 return;
